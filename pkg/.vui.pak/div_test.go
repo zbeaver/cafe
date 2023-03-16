@@ -1,9 +1,7 @@
-package component
+package vui
 
 import (
 	"testing"
-
-	"github.com/zbeaver/cafe/pkg/vui"
 )
 
 type A struct {

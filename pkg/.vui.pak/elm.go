@@ -5,14 +5,21 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/google/uuid"
-	"github.com/ryboe/q"
 )
+
+type Ref map[string]interface{}
 
 type Elm interface {
 	tea.Model
 	SetParent(Elm) error
 	SetChildren(...Elm) error
 	AppendChild(...Elm) error
+	Render() string
+}
+
+type Reactive interface {
+	Data() map[string]interface{}
+	Prop() map[string]interface{}
 }
 
 type Focusable interface {
@@ -40,6 +47,9 @@ type component struct {
 
 	// when visible is true, the component have been showed
 	visible bool
+
+	// slots use to hold all components hooked to
+	slots map[string][]Elm
 }
 
 var (
@@ -60,7 +70,6 @@ func NewRootComponent() *component {
 
 func NewComponent() *component {
 	id, _ := uuid.NewUUID()
-	q.Q(id)
 	return &component{
 		uid: id.String(),
 	}
@@ -173,8 +182,22 @@ func (c *component) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return c, tea.Batch(cmds...)
 }
 
+func (c *component) Data() map[string]interface{} {
+	return map[string]interface{}{}
+}
+
+func (c *component) Prop() map[string]interface{} {
+	return map[string]interface{}{}
+}
+
 // Init inherit from tea
 func (c *component) View() string {
+	return c.Render()
+}
+
+// Render return UI via children and slot
+func (c *component) Render() string {
+	// resolve slot component
 	return ""
 }
 

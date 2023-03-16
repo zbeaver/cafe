@@ -1,4 +1,4 @@
-package component
+package vui
 
 import "github.com/zbeaver/cafe/pkg/vui"
 
