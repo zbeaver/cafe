@@ -19,7 +19,8 @@ func TestDecoder(t *testing.T) {
 	tc := []testcase{
 		{
 			[]byte(`
-				<div name="div1">
+       <html>
+				<div name="div1" style="color:red;background:green">
 					xxx
 					<div>world</div>
 				</div>
@@ -27,6 +28,7 @@ func TestDecoder(t *testing.T) {
 				  hehe
 				  <div> coucu</div>
 				</div>
+			<html>
 			`),
 			vui.NewDocument(),
 			func(as *assert.Assertions, elm vui.Elementary) {
@@ -37,14 +39,27 @@ func TestDecoder(t *testing.T) {
 				as.Equal("HEAD", html[0].NodeName())
 				as.Equal("BODY", html[1].NodeName())
 
+				q.Q(html[0])
 				// BODY
 				body := html[1].ChildNodes()
-				q.Q(body)
 
 				// CONTENT
 				as.Equal(4, len(body))
 				as.Equal("DIV", body[0].NodeName())
 				as.Equal("DIV", body[2].NodeName())
+
+				// Test InlineStyle embeded
+				tcStyle, ok := body[0].(vui.Elementary)
+				if ok {
+					as.Equal(
+						"red",
+						tcStyle.Style().GetPropertyValue("color"),
+					)
+					as.Equal(
+						"green",
+						tcStyle.Style().GetPropertyValue("background"),
+					)
+				}
 
 				// NESTED CONTENT
 				div1 := body[0].ChildNodes()

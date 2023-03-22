@@ -4,6 +4,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/aymerick/douceur/inliner"
 	"github.com/ryboe/q"
 	"github.com/zbeaver/cafe/pkg/vui"
 	"golang.org/x/net/html"
@@ -23,7 +24,8 @@ func NewDecoder() Decoder {
 }
 
 func (d *decoder) Decode(doc vui.Documentary, tpl Template) (docElm vui.Elementary, err error) {
-	raw, err := html.Parse(strings.NewReader(string(tpl)))
+	raw, err := inliner.Inline(string(tpl))
+	dom, err := html.Parse(strings.NewReader(raw))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +34,7 @@ func (d *decoder) Decode(doc vui.Documentary, tpl Template) (docElm vui.Elementa
 		vui.WithNodeName("html", vui.DocumentNode),
 	)
 	doc.AppendChild(docElm)
-	err = d.decodeElement(docElm, raw)
+	err = d.decodeElement(docElm, dom)
 	return
 }
 
@@ -50,11 +52,27 @@ func (d *decoder) decodeElement(root vui.INode, n *html.Node) (err error) {
 				return d.decodeElement(root, c)
 			}
 
+			opts := []interface{}{
+				vui.WithNodeName(c.Data, vui.ElementNode),
+			}
+
+			for _, attr := range c.Attr {
+				switch attr.Key {
+				case "id":
+					opts = append(opts, vui.WithId(attr.Val))
+				case "class":
+					classes := strings.Split(attr.Val, " ")
+					opts = append(opts, vui.WithClass(classes...))
+				case "style":
+					opts = append(opts, vui.WithStyle(attr.Val))
+				}
+			}
+
 			child, err := root.
 				OwnerDocument().
 				CreateElement(
 					c.Data,
-					vui.WithNodeName(c.Data, vui.ElementNode),
+					opts...,
 				)
 			if err != nil {
 				panic(err)

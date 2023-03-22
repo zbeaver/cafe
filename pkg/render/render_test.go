@@ -21,15 +21,19 @@ func TestRender_Simple(t *testing.T) {
 	tc := []testcase{
 		{
 			[]byte(`
-				<div name="div1">
-					xxx
-					<div>world</div>
-				</div>
-				<div name="div2">
-				  hehe
-				  <div> coucu</div>
-				</div>
-			`),
+				<html>
+					<body style="background-color: #352456">
+					<div name="div1">
+						xxx
+						<div>world</div>
+					</div>
+					<div name="div2">
+						hehe
+						<div> coucu</div>
+					</div>
+					</body>
+				</html>
+		 `),
 			vui.NewDocument(),
 			func(as *assert.Assertions, result string) {
 				q.Q(result)
