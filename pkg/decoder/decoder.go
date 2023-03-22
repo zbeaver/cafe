@@ -50,11 +50,27 @@ func (d *decoder) decodeElement(root vui.INode, n *html.Node) (err error) {
 				return d.decodeElement(root, c)
 			}
 
+			opts := []interface{}{
+				vui.WithNodeName(c.Data, vui.ElementNode),
+			}
+
+			for _, attr := range c.Attr {
+				switch attr.Key {
+				case "id":
+					opts = append(opts, vui.WithId(attr.Val))
+				case "class":
+					classes := strings.Split(attr.Val, " ")
+					opts = append(opts, vui.WithClass(classes...))
+				case "style":
+					opts = append(opts, vui.WithStyle(attr.Val))
+				}
+			}
+
 			child, err := root.
 				OwnerDocument().
 				CreateElement(
 					c.Data,
-					vui.WithNodeName(c.Data, vui.ElementNode),
+					opts...,
 				)
 			if err != nil {
 				panic(err)

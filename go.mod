@@ -3,10 +3,12 @@ module github.com/zbeaver/cafe
 go 1.19
 
 require (
+	github.com/76creates/stickers v0.0.0-20230121000757-d6bf5dc8ab6b
 	github.com/charmbracelet/bubbletea v0.23.2
+	github.com/charmbracelet/lipgloss v0.7.1
 	github.com/ryboe/q v1.0.19
 	github.com/stretchr/testify v1.8.2
-	golang.org/x/exp v0.0.0-20230315142452-642cacee5cc0
+	github.com/tdewolff/parse/v2 v2.6.5
 	golang.org/x/net v0.7.0
 )
 

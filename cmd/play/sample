@@ -1,0 +1,37 @@
+package main
+
+import (
+	"bytes"
+	"fmt"
+
+	parse "github.com/tdewolff/parse/v2"
+	"github.com/tdewolff/parse/v2/css"
+)
+
+type Css struct {
+	Name  string
+	Value string
+}
+
+func main() {
+	// true because this is the content of an inline style attribute
+	p := css.NewParser(parse.NewInput(bytes.NewBufferString("color: red;background:greed;box:abc")), true)
+	out := make([]Css, 0)
+	for {
+		gt, _, data := p.Next()
+		c := Css{
+			Name: string(data),
+		}
+		if gt == css.ErrorGrammar {
+			break
+		} else if gt == css.AtRuleGrammar || gt == css.BeginAtRuleGrammar || gt == css.BeginRulesetGrammar || gt == css.DeclarationGrammar {
+			for _, val := range p.Values() {
+				c.Value += string(val.Data)
+			}
+			out = append(out, c)
+		} else {
+			out = append(out, c)
+		}
+	}
+	fmt.Println(out)
+}
