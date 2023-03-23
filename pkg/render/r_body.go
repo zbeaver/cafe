@@ -1,24 +1,26 @@
 package render
 
 import (
-	"strconv"
+	"os"
 
-	"github.com/charmbracelet/lipgloss"
 	"github.com/zbeaver/cafe/pkg/vui"
+	"golang.org/x/term"
 )
 
 type Body struct{}
 
-func (r *Body) Render(n vui.INode) RenderFn {
-	elm, _ := n.(vui.Elementary)
-	p, _ := strconv.Atoi(elm.Style().GetPropertyValue("padding"))
-	div := lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color(elm.Style().GetPropertyValue("text-color"))).
-		Background(lipgloss.Color(elm.Style().GetPropertyValue("background-color"))).
-		Padding(p)
+func (r *Body) Style(base styling, n vui.INode) styling {
+	elm, ok := n.(vui.Elementary)
+	if !ok {
+		return base
+	}
+	return TransformFrom(base)(elm.Style())
+}
 
-	return RenderFn(func(slot string) string {
-		return div.Render(slot)
-	})
+func (r *Body) Render(n vui.INode, s styling, child slots) string {
+	wt, ht, _ := term.GetSize(int(os.Stdout.Fd()))
+	if wt > 0 {
+		return s.MaxWidth(wt).Width(wt - 3).Height(ht - 2).Render(child...)
+	}
+	return s.Render(child...)
 }

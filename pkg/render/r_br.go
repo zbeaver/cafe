@@ -4,9 +4,9 @@ import (
 	"github.com/zbeaver/cafe/pkg/vui"
 )
 
-type Head struct{}
+type Br struct{}
 
-func (r *Head) Style(base styling, n vui.INode) styling {
+func (r *Br) Style(base styling, n vui.INode) styling {
 	elm, ok := n.(vui.Elementary)
 	if !ok {
 		return base
@@ -14,6 +14,6 @@ func (r *Head) Style(base styling, n vui.INode) styling {
 	return TransformFrom(base)(elm.Style())
 }
 
-func (r *Head) Render(n vui.INode, s styling, child slots) string {
-	return ""
+func (r *Br) Render(n vui.INode, s styling, child slots) string {
+	return s.Render("\n\n")
 }

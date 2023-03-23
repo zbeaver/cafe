@@ -16,8 +16,7 @@ type Decoder interface {
 
 type Template []byte
 
-type decoder struct {
-}
+type decoder struct{}
 
 func NewDecoder() Decoder {
 	return &decoder{}

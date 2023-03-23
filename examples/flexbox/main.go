@@ -41,17 +41,17 @@ func main() {
 		flexBox: stickers.NewFlexBox(0, 0),
 	}
 
-	rows := []*stickers.FlexBoxRow{
+	rows1 := []*stickers.FlexBoxRow{
 		m.flexBox.NewRow().AddCells(
 			[]*stickers.FlexBoxCell{
-				stickers.NewFlexBoxCell(1, 6).SetStyle(style1).SetContent("what ther hell"),
+				stickers.NewFlexBoxCell(1, 6).SetStyle(style1).SetContent("ROW 1what ther hell"),
 				stickers.NewFlexBoxCell(1, 6).SetStyle(style2).SetContent("A"),
 				stickers.NewFlexBoxCell(1, 6).SetStyle(style3).SetContent("A"),
 			},
 		),
 		m.flexBox.NewRow().AddCells(
 			[]*stickers.FlexBoxCell{
-				stickers.NewFlexBoxCell(2, 4).SetStyle(style4).SetContent("A"),
+				stickers.NewFlexBoxCell(2, 4).SetStyle(style4).SetContent("Loops"),
 				stickers.NewFlexBoxCell(2, 4).SetStyle(style5).SetContent("A"),
 				stickers.NewFlexBoxCell(3, 4).SetStyle(style6).SetContent("A"),
 				stickers.NewFlexBoxCell(3, 4).SetStyle(style7),
@@ -60,18 +60,43 @@ func main() {
 				stickers.NewFlexBoxCell(4, 4).SetStyle(style10),
 			},
 		),
+		// m.flexBox.NewRow().AddCells(
+		// 	[]*stickers.FlexBoxCell{
+		// 		stickers.NewFlexBoxCell(2, 5).SetStyle(style11),
+		// 		stickers.NewFlexBoxCell(3, 5).SetStyle(style12),
+		// 		stickers.NewFlexBoxCell(10, 5).SetStyle(style13),
+		// 		stickers.NewFlexBoxCell(3, 5).SetStyle(style14),
+		// 		stickers.NewFlexBoxCell(2, 5).SetStyle(style15),
+		// 	},
+		// ),
+		// m.flexBox.NewRow().AddCells(
+		// 	[]*stickers.FlexBoxCell{
+		// 		stickers.NewFlexBoxCell(1, 4).SetStyle(style16),
+		// 		stickers.NewFlexBoxCell(1, 3).SetStyle(style17),
+		// 		stickers.NewFlexBoxCell(1, 2).SetStyle(style18),
+		// 		stickers.NewFlexBoxCell(1, 3).SetStyle(style19),
+		// 		stickers.NewFlexBoxCell(1, 4).SetStyle(style20),
+		// 	},
+		// ),
+	}
+
+	rows2 := []*stickers.FlexBoxRow{
 		m.flexBox.NewRow().AddCells(
 			[]*stickers.FlexBoxCell{
-				stickers.NewFlexBoxCell(2, 5).SetStyle(style11),
-				stickers.NewFlexBoxCell(3, 5).SetStyle(style12),
-				stickers.NewFlexBoxCell(10, 5).SetStyle(style13),
-				stickers.NewFlexBoxCell(3, 5).SetStyle(style14),
-				stickers.NewFlexBoxCell(2, 5).SetStyle(style15),
+				stickers.NewFlexBoxCell(2, 4).SetStyle(style4).SetContent("ROW2"),
+				stickers.NewFlexBoxCell(2, 4).SetStyle(style5).SetContent("A"),
+				stickers.NewFlexBoxCell(3, 4).SetStyle(style6).SetContent("A"),
+				stickers.NewFlexBoxCell(3, 4).SetStyle(style7),
+				stickers.NewFlexBoxCell(3, 4).SetStyle(style8),
+				stickers.NewFlexBoxCell(4, 4).SetStyle(style9),
+				stickers.NewFlexBoxCell(4, 4).SetStyle(style10),
 			},
 		),
+	}
+	rows3 := []*stickers.FlexBoxRow{
 		m.flexBox.NewRow().AddCells(
 			[]*stickers.FlexBoxCell{
-				stickers.NewFlexBoxCell(1, 4).SetStyle(style16),
+				stickers.NewFlexBoxCell(1, 4).SetStyle(style16).SetContent("ROW3"),
 				stickers.NewFlexBoxCell(1, 3).SetStyle(style17),
 				stickers.NewFlexBoxCell(1, 2).SetStyle(style18),
 				stickers.NewFlexBoxCell(1, 3).SetStyle(style19),
@@ -79,8 +104,7 @@ func main() {
 			},
 		),
 	}
-
-	m.flexBox.AddRows(rows)
+	m.flexBox.AddRows(rows1).AddRows(rows2).AddRows(rows3)
 
 	p := tea.NewProgram(&m, tea.WithAltScreen())
 	if err := p.Start(); err != nil {

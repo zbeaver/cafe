@@ -2,18 +2,34 @@ package render
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
-	"github.com/ryboe/q"
+	"github.com/charmbracelet/lipgloss"
+	"github.com/frankenbeanies/randhex"
 	"github.com/zbeaver/cafe/pkg/vui"
 )
 
-type Render interface {
-	Render(vui.INode) RenderFn
+type Registry map[uint32]Executor
+
+type Executor interface {
+	Render(vui.INode, styling, slots) string
+	Style(styling, vui.INode) styling
 }
 
-type RenderFn func(slot string) string
+type slots []string
 
-type Registry map[string]Render
+type exec func(styling) string
+
+const (
+	TAG_BODY = iota + 1
+	TAG_BR
+	TAG_DIV
+	TAG_HEAD
+	TAG_HTML
+	TAG_TEXT
+	TAG_UNKNOWN
+)
 
 type engine struct {
 	registry Registry
@@ -23,11 +39,13 @@ type engine struct {
 
 func NewEngine(ctx context.Context, doc vui.Documentary) *engine {
 	reg := Registry{
-		"body": (*Body)(nil),
-		"head": (*Head)(nil),
-		"html": (*Html)(nil),
-		"div":  (*Div)(nil),
-		"text": (*Text)(nil),
+		TAG_BODY:    (*Body)(nil),
+		TAG_BR:      (*Unknown)(nil),
+		TAG_DIV:     (*Div)(nil),
+		TAG_HEAD:    (*Head)(nil),
+		TAG_HTML:    (*Html)(nil),
+		TAG_TEXT:    (*Text)(nil),
+		TAG_UNKNOWN: (*Unknown)(nil),
 	}
 
 	return &engine{
@@ -37,37 +55,52 @@ func NewEngine(ctx context.Context, doc vui.Documentary) *engine {
 	}
 }
 
-func (e *engine) Render() (result string) {
+func (e *engine) Render() string {
+	res := strings.Builder{}
 	for _, c := range e.doc.ChildNodes() {
-		result += e.render(c)
+		res.WriteString(e.executor(c)(NewStyling()))
 	}
-	return
+	return res.String()
 }
 
-func (e *engine) render(node vui.INode) string {
-	var slot string
-	for _, c := range node.ChildNodes() {
-		slot += e.render(c)
-	}
+func debug(s styling, block string) string {
+	w, h := lipgloss.Size(block)
+
+	return s.Bold(true).
+		Foreground(lipgloss.Color("#ffffff")).
+		Background(lipgloss.Color(randhex.New().String())).
+		Render(fmt.Sprintf("[%vx%v]", w, h))
+}
+
+func (e *engine) executor(node vui.INode) exec {
+	var ex Executor
 
 	switch node.(type) {
 	case *vui.HtmlElm:
-		fn := e.registry["html"].Render(node)
-		return fn(slot)
+		ex = e.registry[TAG_HTML]
 	case *vui.HeadElm:
-		fn := e.registry["head"].Render(node)
-		return fn(slot)
+		ex = e.registry[TAG_HEAD]
+	case *vui.BrElm:
+		ex = e.registry[TAG_BR]
 	case *vui.BodyElm:
-		fn := e.registry["body"].Render(node)
-		return fn(slot)
+		ex = e.registry[TAG_BODY]
 	case *vui.DivElm:
-		fn := e.registry["div"].Render(node)
-		return fn(slot)
+		ex = e.registry[TAG_DIV]
 	case *vui.Text:
-		fn := e.registry["text"].Render(node)
-		return fn(slot)
+		ex = e.registry[TAG_TEXT]
 	default:
-		q.Q("COME HERE")
-		return node.NodeValue()
+		ex = e.registry[TAG_UNKNOWN]
 	}
+
+	return exec(func(base styling) string {
+		var hook slots
+		for _, c := range node.ChildNodes() {
+			childView := strings.TrimSpace(e.executor(c)(ex.Style(base, c)))
+			if childView != "" {
+				hook = append(hook, childView)
+			}
+		}
+
+		return strings.TrimSpace(ex.Render(node, base, hook))
+	})
 }

@@ -32,10 +32,12 @@ type ElmRegistry map[string]Elementary
 
 var (
 	registry = ElmRegistry{
-		"html": (*HtmlElm)(nil),
-		"body": (*BodyElm)(nil),
-		"head": (*HeadElm)(nil),
-		"div":  (*DivElm)(nil),
+		"html":    (*HtmlElm)(nil),
+		"body":    (*BodyElm)(nil),
+		"head":    (*HeadElm)(nil),
+		"div":     (*DivElm)(nil),
+		"br":      (*BrElm)(nil),
+		"unknown": (*UnknownElm)(nil),
 	}
 	_ Documentary = (*Document)(nil)
 )
@@ -46,7 +48,8 @@ type CustomElemRegistry map[string]Elementary
 func (f *elmFactory) Factory(tag string) (elmFacMethod, error) {
 	xel := registry[tag]
 	if xel == nil {
-		return nil, fmt.Errorf("The element tag name `%v` not found", tag)
+		xel = registry["unknown"]
+		// return nil, fmt.Errorf("The element tag name `%v` not found", tag)
 	}
 
 	return func(opts ...interface{}) (Elementary, error) {
