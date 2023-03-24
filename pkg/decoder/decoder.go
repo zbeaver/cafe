@@ -24,6 +24,7 @@ func NewDecoder() Decoder {
 
 func (d *decoder) Decode(doc vui.Documentary, tpl Template) (docElm vui.Elementary, err error) {
 	raw, err := inliner.Inline(string(tpl))
+	q.Q(string(raw))
 	dom, err := html.Parse(strings.NewReader(raw))
 	if err != nil {
 		log.Fatal(err)
@@ -91,7 +92,7 @@ func (d *decoder) decodeElement(root vui.INode, n *html.Node) (err error) {
 
 		// More
 		default:
-			q.Q("default", int(c.Type), c.Data)
+			// q.Q("default", int(c.Type), c.Data)
 		}
 	}
 	return

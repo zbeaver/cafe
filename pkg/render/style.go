@@ -1,6 +1,8 @@
 package render
 
 import (
+	"log"
+	"math"
 	"regexp"
 	"strconv"
 	"strings"
@@ -10,30 +12,39 @@ import (
 )
 
 var (
-	painter = (*styling)(nil)
-	radio   = 16
+	painter         = (*styling)(nil)
+	radio   float64 = 8.5
 )
 
 type styling struct {
 	lipgloss.Style
-	flex bool
+	flex        bool
+	inlineBlock bool
+	iMaxWidth   int
+	iMaxHeight  int
 }
 
 type transformer func(vui.CSSStyleDecl) styling
 
+func (s *styling) SetMaxSize(w int, h int) styling {
+	s.iMaxHeight = h
+	s.iMaxWidth = w
+	return *s
+}
+
 func NewStyling() styling {
 	return styling{
 		Style: lipgloss.NewStyle(),
-		flex:  false,
 	}
 }
+
 func TransformFrom(base styling) transformer {
-	new := &styling{
-		Style: lipgloss.NewStyle().
-			Background(base.GetBackground()).
-			Foreground(base.GetForeground()).
-			Align(base.GetAlign()),
-		flex: base.flex,
+	new := styling{
+		Style:       lipgloss.NewStyle().Inherit(base.Style),
+		flex:        base.flex,
+		iMaxHeight:  base.iMaxHeight,
+		iMaxWidth:   base.iMaxWidth,
+		inlineBlock: base.inlineBlock,
 	}
 
 	return transformer(func(css vui.CSSStyleDecl) styling {
@@ -44,14 +55,11 @@ func TransformFrom(base styling) transformer {
 			iForeground(css).
 			iDisplay(css).
 			iWidth(css).
-			iHeight(css)
-		return *new
+			iHeight(css).
+			iBorder(css)
+		return new
 	})
 }
-
-// func (s *style) toLipgloss() {
-// 	for s.css.GetPropertyValue("padding")
-// }
 
 func strconvInt(str string) (int, error) {
 	reg, err := regexp.Compile("[^0-9]+")
@@ -59,7 +67,7 @@ func strconvInt(str string) (int, error) {
 		return 0, err
 	}
 	n, err := strconv.Atoi(reg.ReplaceAllString(str, ""))
-	return int(n / radio), err
+	return int(math.Round(float64(n) / radio)), err
 }
 
 func parseMeasureString(m string) []int {
@@ -76,47 +84,55 @@ func parseMeasureString(m string) []int {
 func (s *styling) iMargin(css vui.CSSStyleDecl) *styling {
 	m := css.GetPropertyValue("margin")
 	ret := parseMeasureString(m)
-
+	var err error
 	if str := css.GetPropertyValue("margin-top"); str != "" {
-		ret[0], _ = strconvInt(str)
+		ret[0], err = strconvInt(str)
 	}
 
 	if str := css.GetPropertyValue("margin-right"); str != "" {
-		ret[1], _ = strconvInt(str)
+		ret[1], err = strconvInt(str)
 	}
 
 	if str := css.GetPropertyValue("margin-bottom"); str != "" {
-		ret[2], _ = strconvInt(str)
+		ret[2], err = strconvInt(str)
 	}
 
 	if str := css.GetPropertyValue("margin-left"); str != "" {
-		ret[3], _ = strconvInt(str)
+		ret[3], err = strconvInt(str)
 	}
 
+	if err != nil {
+		log.Fatal(err)
+	}
 	s.Margin(ret...)
+
+	// s.Width(s.GetWidth() - s.GetMarginLeft() - s.GetMarginRight())
 	return s
 }
 
 func (s *styling) iPadding(css vui.CSSStyleDecl) *styling {
 	m := css.GetPropertyValue("padding")
 	ret := parseMeasureString(m)
-
+	var err error
 	if str := css.GetPropertyValue("padding-top"); str != "" {
-		ret[0], _ = strconvInt(str)
+		ret[0], err = strconvInt(str)
 	}
 
 	if str := css.GetPropertyValue("padding-right"); str != "" {
-		ret[1], _ = strconvInt(str)
+		ret[1], err = strconvInt(str)
 	}
 
 	if str := css.GetPropertyValue("padding-bottom"); str != "" {
-		ret[2], _ = strconvInt(str)
+		ret[2], err = strconvInt(str)
 	}
 
 	if str := css.GetPropertyValue("padding-left"); str != "" {
-		ret[3], _ = strconvInt(str)
+		ret[3], err = strconvInt(str)
 	}
 
+	if err != nil {
+		log.Fatal(err)
+	}
 	s.Padding(ret...)
 	return s
 }
@@ -140,7 +156,10 @@ func (s *styling) iForeground(css vui.CSSStyleDecl) *styling {
 
 func (s *styling) iWidth(css vui.CSSStyleDecl) *styling {
 	if str := css.GetPropertyValue("width"); str != "" {
-		w, _ := strconvInt(str)
+		w, err := strconvInt(str)
+		if err != nil {
+			log.Fatal(err)
+		}
 		s.Width(w)
 	}
 	return s
@@ -148,13 +167,22 @@ func (s *styling) iWidth(css vui.CSSStyleDecl) *styling {
 
 func (s *styling) iHeight(css vui.CSSStyleDecl) *styling {
 	if str := css.GetPropertyValue("height"); str != "" {
-		h, _ := strconvInt(str)
+		h, err := strconvInt(str)
+		if err != nil {
+			log.Fatal(err)
+		}
 		s.Height(h)
 	}
 	return s
 }
 
-func (s *styling) bBorder(css vui.CSSStyleDecl) *styling {
+func (s *styling) iBorder(css vui.CSSStyleDecl) *styling {
+	if str := css.GetPropertyValue("border"); str != "" {
+		// s.MaxHeight = s.MaxHeight - 30
+		// s.MaxWidth = s.MaxWidth - 30
+		// s.Width(s.MaxWidth).Height(s.MaxHeight).Border(lipgloss.NormalBorder())
+		s.Border(lipgloss.NormalBorder())
+	}
 	return s
 }
 
@@ -163,10 +191,9 @@ func (s *styling) iDisplay(css vui.CSSStyleDecl) *styling {
 	switch str {
 	case "flex":
 		s.flex = true
-	case "block":
-		// set horizonal join
+	case "inline-block":
+		s.inlineBlock = true
 	default:
-		// use default
 	}
 
 	return s

@@ -66,7 +66,7 @@ func (e *engine) Render() string {
 func debug(s styling, block string) string {
 	w, h := lipgloss.Size(block)
 
-	return s.Bold(true).
+	return s.Copy().Bold(true).
 		Foreground(lipgloss.Color("#ffffff")).
 		Background(lipgloss.Color(randhex.New().String())).
 		Render(fmt.Sprintf("[%vx%v]", w, h))

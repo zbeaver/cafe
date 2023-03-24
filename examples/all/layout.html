@@ -4,79 +4,78 @@
       body {
         background: #874BFD;
         color: #000000;
-        margin: 0px;
-      }
-      .l2-1 {
-        background: #874BFD;
-        color: #000000;
-				padding: 16px 16px 16px 16px;
-      }
-      .l2-2 {
-        background: #022345;
-        color: #ffffff;
-				padding: 16px 16px 16px 16px;
       }
       .l1 {
         background: #074533;
         color: #ffffff;
+        width: 1200;
+        padding: 9px 9px;
       }
-      .div2 {
-        background: #872242;
+      .l1 div {
+        display: inline-block;
+      }
+      .l2 {
+        background: #dd2dd2;
+        color: #ffffff;
+        padding: 9px 9px;
+      }
+      .l21 {
+        background: #033974;
+        color: #ffffff;
+        width: 300;
+      }
+      .l22 {
+        background: #022345;
+        color: #ffffff;
+        width: 300;
+      }
+      .l23 {
+        background: #01f22f;
         color: #000000;
+        width: 300;
       }
-			.flex {
-			  display: flex;
-			}
+      .inline-block {
+        display: inline-block
+      }
     </style>
   </head>
   <body>
     <div class="l0">
-      INSIDE LEVEL 0
+      *** L1 is inline 1200 width***
       <div class="l1">
-        INSIDE LEVEL 1
-        <div class="l2-1">
-          INSIDE LEVEL 2
+        <div class="l21" style="display:block">
+Duis et odio et leo sollicitudin consequat. Aliquam lobortis. Phasellus condimentum. Ut porttitor bibendum libero. Integer euismod lacinia velit. Donec velit justo, sodales varius, cursus sed, mattis a, arcu.
+
+Maecenas accumsan, sem iaculis egestas gravida, odio nunc aliquet dui, eget cursus diam purus vel augue. Donec eros nisi, imperdiet quis, volutpat ac, sollicitudin sed, arcu. Aenean vel mauris. Mauris tincidunt. Nullam euismod odio at velit. Praesent elit purus, porttitor id, facilisis in, consequat ut, libero. Morbi imperdiet, magna quis ullamcorper malesuada, mi massa pharetra lectus, a pellentesque urna urna id turpis. Nam posuere lectus vitae nibh. Etiam tortor orci, sagittis malesuada,
+rhoncus.
         </div>
-        <div class="l2-2">
-          INSIDE LEVEL 2
+        <div class="l22">
+Elit augue ut massa.
+
+Nulla consequat erat at massa. Vivamus id mi. Morbi purus enim, dapibus a, facilisis non, tincidunt at, enim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Duis imperdiet eleifend arcu. Cras magna ligula, consequat at, tempor non, posuere nec, libero. Vestibulum vel ipsum. Praesent congue justo et nunc. Vestibulum nec felis vitae nisl pharetra sollicitudin. Quisque nec arcu vel tellus tristique vestibulum. Aenean vel lacus. Mauris dolor erat, commodo
+ut, dapibus vehicula, lobortis sit amet, orci. Aliquam augue. In semper nisi nec libero. Cras magna ipsum, scelerisque et, tempor eget, gravida nec, lacus.
+
         </div>
       </div>
-      <div class="l1">
-        INSIDE LEVEL 1
-        <div class="l2-1">
-          INSIDE LEVEL 2
-        </div>
-        <div class="l2-2">
-          INSIDE LEVEL 2
-        </div>
-      </div>
-			<div class="l1">
-        <div>random multiple text</div>
-			</div>
     </div>
     <div class="l0">
-      INSIDE LEVEL 0
-      <div class="l1">
-        INSIDE LEVEL 1
-        <div class="l2-1">
-        INSIDE LEVEL 2
+      *** L2 is inline 100% width***
+      <div class="l2">
+        <div class="l23">
+Elit augue ut massa.
+
+Nulla consequat erat at massa. Vivamus id mi. Morbi purus enim, dapibus a, facilisis non, tincidunt at, enim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Duis imperdiet eleifend arcu. Cras magna ligula, consequat at, tempor non, posuere nec, libero. Vestibulum vel ipsum. Praesent congue justo et nunc. Vestibulum nec felis vitae nisl pharetra sollicitudin. Quisque nec arcu vel tellus tristique vestibulum. Aenean vel lacus. Mauris dolor erat, commodo
+ut, dapibus vehicula, lobortis sit amet, orci. Aliquam augue. In semper nisi nec libero. Cras magna ipsum, scelerisque et, tempor eget, gravida nec, lacus.
+
         </div>
-        <div class="l2-2">
-        INSIDE LEVEL 2
-        </div>
+        <div class="l21">INSIDE CLASS 2</div>
+        <div class="l22">INSIDE CLASS 2</div>
       </div>
-      <div class="l1">
-        INSIDE LEVEL 1
-        <div class="l2-1">
-        INSIDE LEVEL 2
-        </div>
-        <div class="l2-2"></div>
-        INSIDE LEVEL 2
+      <div class="l2">
+        INSIDE CLASS L1
+        <div class="l21">INSIDE CLASS 2</div>
+        <div class="l22">INSIDE CLASS 2</div>
       </div>
-			<div class="div2">
-        <div>random multiple text</div>
-        <div>random multiple text</div>
-			</div>
     </div>
   </body>
 </html>

@@ -17,8 +17,10 @@ func (r *Text) Style(base styling, n vui.INode) styling {
 }
 
 func (r *Text) Render(n vui.INode, s styling, child slots) string {
-	if strings.TrimSpace(n.NodeValue()) == "" {
+	cont := strings.TrimSpace(n.NodeValue())
+	if cont == "" || cont == "\n" {
 		return ""
 	}
-	return s.Render(strings.TrimSpace(n.NodeValue()))
+
+	return cont
 }

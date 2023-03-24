@@ -17,9 +17,6 @@ func (r *Div) Style(base styling, n vui.INode) styling {
 }
 
 func (r *Div) Render(n vui.INode, s styling, child slots) string {
-	// Hardcode flexbox
-	// height: 6
-	// span: solid
 
 	if s.flex {
 		flexbox := stickers.NewFlexBox(0, 0)
@@ -35,9 +32,19 @@ func (r *Div) Render(n vui.INode, s styling, child slots) string {
 		}
 		return flexbox.AddRows(rows).Render()
 	}
-	// debugin
-	debug := debug(s, lipgloss.JoinVertical(lipgloss.Left, child...))
-	child = append(child, debug)
-	// return
-	return s.Render(lipgloss.JoinVertical(lipgloss.Left, child...))
+
+	if s.inlineBlock {
+		return s.
+			Copy().
+			MaxWidth(s.iMaxWidth).
+			SetString(lipgloss.JoinHorizontal(lipgloss.Left, child...)).
+			Render()
+	} else {
+		ret := lipgloss.JoinVertical(lipgloss.Top, child...)
+		if s.GetWidth() > 0 {
+			return s.Copy().SetString(ret).Render()
+		} else {
+			return s.Copy().Width(s.iMaxWidth).SetString(ret).Render()
+		}
+	}
 }

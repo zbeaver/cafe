@@ -2,8 +2,11 @@ package main
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
+	"runtime"
 
 	"github.com/zbeaver/cafe/pkg/decoder"
 	"github.com/zbeaver/cafe/pkg/render"
@@ -11,7 +14,12 @@ import (
 )
 
 func main() {
-	tpl, err := ioutil.ReadFile("./layout.html")
+	var file string
+	flag.StringVar(&file, "file", "default.html", "link to layout file")
+	flag.Parse()
+	_, fpath, _, _ := runtime.Caller(0)
+	path := filepath.Dir(fpath)
+	tpl, err := ioutil.ReadFile(fmt.Sprintf("%v/%v", path, file))
 	if err != nil {
 		panic(err)
 	}
