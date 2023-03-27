@@ -5,8 +5,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-
-	"github.com/ryboe/q"
 )
 
 type ElmFn func() Loadable
@@ -54,7 +52,6 @@ func (vl *loader) Load() error {
 	d := xml.NewDecoder(bytes.NewReader(vl.template))
 	for {
 		t, err := d.Token()
-		q.Q(">>>>>>>>>>", t)
 		if err == io.EOF {
 			break
 		}
@@ -68,7 +65,6 @@ func (vl *loader) Load() error {
 		// - Create PlainComponent for this case
 		// - Append to $slot related
 		case xml.StartElement:
-			q.Q("start", tt.Name.Local)
 			if count == 1 {
 				count++
 				continue
@@ -87,11 +83,9 @@ func (vl *loader) Load() error {
 			if count == 1 {
 				continue
 			}
-			q.Q("end", tt.Name.Local)
 			deep--
 			count--
 		case xml.CharData:
-			q.Q("content", string(tt))
 		}
 	}
 

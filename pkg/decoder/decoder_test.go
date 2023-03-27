@@ -3,20 +3,17 @@ package decoder
 import (
 	"testing"
 
-	"github.com/ryboe/q"
 	"github.com/stretchr/testify/assert"
 	"github.com/zbeaver/cafe/pkg/vui"
 )
 
-type testcase struct {
-	tpl      []byte
-	doc      vui.Documentary
-	expected func(*assert.Assertions, vui.Elementary)
-}
-
 func TestDecoder(t *testing.T) {
 	as := assert.New(t)
-	tc := []testcase{
+	tc := []struct {
+		tpl      []byte
+		doc      vui.Documentary
+		expected func(*assert.Assertions, vui.Elementary)
+	}{
 		{
 			[]byte(`
        <html>
@@ -39,7 +36,6 @@ func TestDecoder(t *testing.T) {
 				as.Equal("HEAD", html[0].NodeName())
 				as.Equal("BODY", html[1].NodeName())
 
-				q.Q(html[0])
 				// BODY
 				body := html[1].ChildNodes()
 

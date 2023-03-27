@@ -13,11 +13,9 @@ import (
 type Registry map[uint32]Executor
 
 type Executor interface {
-	Render(vui.INode, styling, slots) string
+	Render(vui.INode, styling, string) string
 	Style(styling, vui.INode) styling
 }
-
-type slots []string
 
 type exec func(styling) string
 
@@ -93,14 +91,22 @@ func (e *engine) executor(node vui.INode) exec {
 	}
 
 	return exec(func(base styling) string {
-		var hook slots
+		cs := make(cells, 0)
+
 		for _, c := range node.ChildNodes() {
-			childView := strings.TrimSpace(e.executor(c)(ex.Style(base, c)))
-			if childView != "" {
-				hook = append(hook, childView)
+			// rescurive call
+			styling := ex.Style(base, c)
+			subview := strings.TrimSpace(e.executor(c)(styling))
+			if subview != "" {
+				cs = append(cs, NewCell(subview, WithDisplay(styling.display)))
 			}
 		}
 
-		return strings.TrimSpace(ex.Render(node, base, hook))
+		if len(cs) > 0 {
+			t := NewTissue(cs, &base)
+			return strings.TrimSpace(ex.Render(node, base, t.Render()))
+		} else {
+			return strings.TrimSpace(ex.Render(node, base, ""))
+		}
 	})
 }

@@ -2,8 +2,6 @@ package vui
 
 import (
 	"strings"
-
-	"github.com/ryboe/q"
 )
 
 type Constructor interface {
@@ -105,7 +103,6 @@ func NewElm(opts ...interface{}) *Elm {
 			o, _ := opt.(NodeOpt)
 			nodeOpt = append(nodeOpt, o)
 		default:
-			q.Q("Cannot cast", opt)
 		}
 	}
 

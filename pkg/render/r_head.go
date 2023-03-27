@@ -14,6 +14,6 @@ func (r *Head) Style(base styling, n vui.INode) styling {
 	return TransformFrom(base)(elm.Style())
 }
 
-func (r *Head) Render(n vui.INode, s styling, child slots) string {
+func (r *Head) Render(n vui.INode, s styling, child string) string {
 	return ""
 }

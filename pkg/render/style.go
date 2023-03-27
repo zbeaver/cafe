@@ -3,12 +3,14 @@ package render
 import (
 	"log"
 	"math"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/zbeaver/cafe/pkg/vui"
+	"golang.org/x/term"
 )
 
 var (
@@ -18,46 +20,77 @@ var (
 
 type styling struct {
 	lipgloss.Style
-	flex        bool
-	inlineBlock bool
-	iMaxWidth   int
-	iMaxHeight  int
+	display string
+	width   int
+	height  int
 }
 
 type transformer func(vui.CSSStyleDecl) styling
 
 func (s *styling) SetMaxSize(w int, h int) styling {
-	s.iMaxHeight = h
-	s.iMaxWidth = w
+	s.height = h
+	s.width = w
 	return *s
 }
 
+// NewStyling return new styling instance
 func NewStyling() styling {
 	return styling{
 		Style: lipgloss.NewStyle(),
 	}
 }
 
+// Transform receive base styling (parent style)
+// Compute and return new styling
+// The following is attr applied from css:
+//
+// - margin
+// - padding
+// - border
+// - background (inherit)
+// - color (inherit)
+// - display
+//
+// The following is rule applied specific cases:
+//
+// - width
+//   always less than terminal width
+//   updated when css.width less than base.width
+//   base.width - base.padding
+// - height
+//   always less than terminal width
+//   update if css.height less than base.height
+//   base.height - base.padding
 func TransformFrom(base styling) transformer {
-	new := styling{
-		Style:       lipgloss.NewStyle().Inherit(base.Style),
-		flex:        base.flex,
-		iMaxHeight:  base.iMaxHeight,
-		iMaxWidth:   base.iMaxWidth,
-		inlineBlock: base.inlineBlock,
+	xW, xH, _ := term.GetSize(int(os.Stdout.Fd()))
+
+	// mt, mr, mb, ml := base.GetMargin()
+	// pt, pr, pb, pl := base.GetPadding()
+	w := min(base.width, xW)
+	h := min(base.height, xH)
+
+	new := &styling{
+		Style: lipgloss.
+			NewStyle().
+			Inherit(base.Style).
+			MarginBackground(base.GetBackground()).
+			Width(w),
+		height: h,
+		width:  w,
 	}
 
 	return transformer(func(css vui.CSSStyleDecl) styling {
-		new.iMargin(css).
+		new.iWidth(css).
+			iHeight(css).
+			iMargin(css).
 			iPadding(css).
 			iAlign(css).
 			iBackground(css).
 			iForeground(css).
 			iDisplay(css).
-			iWidth(css).
-			iHeight(css).
 			iBorder(css)
-		return new
+
+		return *new
 	})
 }
 
@@ -83,6 +116,9 @@ func parseMeasureString(m string) []int {
 
 func (s *styling) iMargin(css vui.CSSStyleDecl) *styling {
 	m := css.GetPropertyValue("margin")
+	if m == "" {
+		return s
+	}
 	ret := parseMeasureString(m)
 	var err error
 	if str := css.GetPropertyValue("margin-top"); str != "" {
@@ -106,12 +142,16 @@ func (s *styling) iMargin(css vui.CSSStyleDecl) *styling {
 	}
 	s.Margin(ret...)
 
-	// s.Width(s.GetWidth() - s.GetMarginLeft() - s.GetMarginRight())
+	// s.width = s.width - s.GetMarginLeft() - s.GetMarginRight()
+	// s.height = s.height - s.GetMarginBottom() - s.GetMarginTop()
 	return s
 }
 
 func (s *styling) iPadding(css vui.CSSStyleDecl) *styling {
 	m := css.GetPropertyValue("padding")
+	if m == "" {
+		return s
+	}
 	ret := parseMeasureString(m)
 	var err error
 	if str := css.GetPropertyValue("padding-top"); str != "" {
@@ -134,6 +174,8 @@ func (s *styling) iPadding(css vui.CSSStyleDecl) *styling {
 		log.Fatal(err)
 	}
 	s.Padding(ret...)
+	s.width = s.width - s.GetPaddingLeft() - s.GetPaddingRight()
+	s.height = s.height - s.GetPaddingBottom() - s.GetPaddingTop()
 	return s
 }
 
@@ -160,7 +202,9 @@ func (s *styling) iWidth(css vui.CSSStyleDecl) *styling {
 		if err != nil {
 			log.Fatal(err)
 		}
-		s.Width(w)
+		w = min(w, s.width)
+		s.width = w
+		s.Width(s.width)
 	}
 	return s
 }
@@ -178,24 +222,15 @@ func (s *styling) iHeight(css vui.CSSStyleDecl) *styling {
 
 func (s *styling) iBorder(css vui.CSSStyleDecl) *styling {
 	if str := css.GetPropertyValue("border"); str != "" {
-		// s.MaxHeight = s.MaxHeight - 30
-		// s.MaxWidth = s.MaxWidth - 30
-		// s.Width(s.MaxWidth).Height(s.MaxHeight).Border(lipgloss.NormalBorder())
+		s.Width(s.GetWidth() - 4)
 		s.Border(lipgloss.NormalBorder())
 	}
 	return s
 }
 
 func (s *styling) iDisplay(css vui.CSSStyleDecl) *styling {
-	str := css.GetPropertyValue("display")
-	switch str {
-	case "flex":
-		s.flex = true
-	case "inline-block":
-		s.inlineBlock = true
-	default:
-	}
-
+	display := css.GetPropertyValue("display")
+	s.display = display
 	return s
 }
 

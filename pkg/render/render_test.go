@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/ryboe/q"
 	"github.com/stretchr/testify/assert"
 	"github.com/zbeaver/cafe/pkg/decoder"
 	"github.com/zbeaver/cafe/pkg/vui"
@@ -36,7 +35,6 @@ func TestRender_Simple(t *testing.T) {
 		 `),
 			vui.NewDocument(),
 			func(as *assert.Assertions, result string) {
-				q.Q(result)
 			},
 		},
 	}

@@ -4,7 +4,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/ryboe/q"
 	"golang.org/x/net/html"
 )
 
@@ -16,9 +15,6 @@ func main() {
 	}
 	var f func(*html.Node)
 	f = func(n *html.Node) {
-		if n.Type == html.ElementNode {
-			q.Q(n.Data)
-		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			f(c)
 		}

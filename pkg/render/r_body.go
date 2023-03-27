@@ -15,14 +15,6 @@ func (r *Body) Style(base styling, n vui.INode) styling {
 	return TransformFrom(base)(elm.Style())
 }
 
-func (r *Body) Render(n vui.INode, s styling, child slots) string {
-	if s.GetWidth() == 0 {
-		s.Width(s.iMaxWidth)
-	}
-
-	if s.GetHeight() == 0 {
-		s.Height(s.iMaxHeight)
-	}
-
-	return s.SetString(child...).Render()
+func (r *Body) Render(n vui.INode, s styling, child string) string {
+	return s.SetString(child).Render()
 }

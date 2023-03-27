@@ -23,6 +23,6 @@ func (r *Html) Style(base styling, n vui.INode) styling {
 	return TransformFrom(base)(elm.Style())
 }
 
-func (r *Html) Render(n vui.INode, s styling, child slots) string {
-	return s.SetString(child...).Render()
+func (r *Html) Render(n vui.INode, s styling, child string) string {
+	return s.SetString(child).Render()
 }

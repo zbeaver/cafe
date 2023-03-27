@@ -89,5 +89,4 @@ func TestLoader_Nested(t *testing.T) {
 		panic(err)
 	}
 	s.Equal(root.View(), "hello world")
-	// q.Q(root)
 }
