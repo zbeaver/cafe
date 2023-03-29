@@ -15,7 +15,7 @@ import (
 
 func main() {
 	var file string
-	flag.StringVar(&file, "file", "default.html", "link to layout file")
+	flag.StringVar(&file, "file", "cv.html", "link to layout file")
 	flag.Parse()
 	_, fpath, _, _ := runtime.Caller(0)
 	path := filepath.Dir(fpath)

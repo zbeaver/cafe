@@ -2,6 +2,8 @@ package vui
 
 import (
 	"strings"
+
+	"golang.org/x/net/html"
 )
 
 // Interface port from DOM WebAPI
@@ -60,6 +62,10 @@ func (l NodeList) Last() INode {
 }
 
 type NodeOpt func(*Node)
+
+type Attributer interface {
+	ApplyAttr([]html.Attribute)
+}
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeName
 func WithNodeName(name string, nodeType NodeType) NodeOpt {

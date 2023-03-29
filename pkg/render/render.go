@@ -25,6 +25,7 @@ const (
 	TAG_DIV
 	TAG_HEAD
 	TAG_HTML
+	TAG_IMG
 	TAG_TEXT
 	TAG_UNKNOWN
 )
@@ -38,10 +39,11 @@ type engine struct {
 func NewEngine(ctx context.Context, doc vui.Documentary) *engine {
 	reg := Registry{
 		TAG_BODY:    (*Body)(nil),
-		TAG_BR:      (*Unknown)(nil),
+		TAG_BR:      (*Br)(nil),
 		TAG_DIV:     (*Div)(nil),
 		TAG_HEAD:    (*Head)(nil),
 		TAG_HTML:    (*Html)(nil),
+		TAG_IMG:     (*Img)(nil),
 		TAG_TEXT:    (*Text)(nil),
 		TAG_UNKNOWN: (*Unknown)(nil),
 	}
@@ -84,6 +86,8 @@ func (e *engine) executor(node vui.INode) exec {
 		ex = e.registry[TAG_BODY]
 	case *vui.DivElm:
 		ex = e.registry[TAG_DIV]
+	case *vui.ImgElm:
+		ex = e.registry[TAG_IMG]
 	case *vui.Text:
 		ex = e.registry[TAG_TEXT]
 	default:

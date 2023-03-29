@@ -37,6 +37,7 @@ var (
 		"head":    (*HeadElm)(nil),
 		"div":     (*DivElm)(nil),
 		"br":      (*BrElm)(nil),
+		"img":     (*ImgElm)(nil),
 		"unknown": (*UnknownElm)(nil),
 	}
 	_ Documentary = (*Document)(nil)

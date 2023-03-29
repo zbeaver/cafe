@@ -75,6 +75,11 @@ func (d *decoder) decodeElement(root vui.INode, n *html.Node) (err error) {
 			if err != nil {
 				panic(err)
 			}
+
+			if attributer, ok := child.(vui.Attributer); ok {
+				attributer.ApplyAttr(c.Attr)
+			}
+
 			root.AppendChild(child)
 			err = d.decodeElement(child, c)
 
