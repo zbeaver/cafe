@@ -32,13 +32,27 @@ type ElmRegistry map[string]Elementary
 
 var (
 	registry = ElmRegistry{
-		"html":    (*HtmlElm)(nil),
-		"body":    (*BodyElm)(nil),
-		"head":    (*HeadElm)(nil),
-		"div":     (*DivElm)(nil),
-		"br":      (*BrElm)(nil),
-		"img":     (*ImgElm)(nil),
-		"unknown": (*UnknownElm)(nil),
+		"anchor":   (*AnchorElm)(nil),
+		"body":     (*BodyElm)(nil),
+		"br":       (*BrElm)(nil),
+		"button":   (*ButtonElm)(nil),
+		"div":      (*DivElm)(nil),
+		"fieldset": (*FieldSetElm)(nil),
+		"form":     (*FormElm)(nil),
+		"head":     (*HeadElm)(nil),
+		"heading":  (*HeadingElm)(nil),
+		"hr":       (*HrElm)(nil),
+		"html":     (*HtmlElm)(nil),
+		"img":      (*ImgElm)(nil),
+		"input":    (*InputElm)(nil),
+		"label":    (*LabelElm)(nil),
+		"legend":   (*LegendElm)(nil),
+		"optgroup": (*OptGroupElm)(nil),
+		"option":   (*OptionElm)(nil),
+		"p":        (*ParagraphElm)(nil),
+		"select":   (*SelectElm)(nil),
+		"span":     (*SpanElm)(nil),
+		"unknown":  (*UnknownElm)(nil),
 	}
 	_ Documentary = (*Document)(nil)
 )
